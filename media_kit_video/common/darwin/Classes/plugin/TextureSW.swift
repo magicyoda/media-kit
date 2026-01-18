@@ -116,7 +116,12 @@ public class TextureSW: NSObject, FlutterTexture, ResizableTextureProtocol {
       )
     }
 
-    var ssize: [Int32] = [Int32(size.width), Int32(size.height)]
+    // Use actual pixel buffer dimensions, not the passed size.
+    // This prevents crashes when layout constraints change faster than resize() calls.
+    // See: https://github.com/media-kit/media-kit/issues/627
+    let bufferWidth = CVPixelBufferGetWidth(textureContext!.pixelBuffer)
+    let bufferHeight = CVPixelBufferGetHeight(textureContext!.pixelBuffer)
+    var ssize: [Int32] = [Int32(bufferWidth), Int32(bufferHeight)]
     let format: String = "bgr0"
     var pitch: Int = CVPixelBufferGetBytesPerRow(textureContext!.pixelBuffer)
     let buffer = CVPixelBufferGetBaseAddress(textureContext!.pixelBuffer)
